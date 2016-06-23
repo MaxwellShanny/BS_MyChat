@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>聊天室</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/dashboard.css" rel="stylesheet">
+    <link href="/page.css" rel="stylesheet">
+</head>
+
+<body>
+
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">在线聊天</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a id="notice_name" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" onclick="update_msg_notice()">消息通知</a>
+                    <ul id="notice" class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                        <li><a href="#">Action<p style="float: right">2</p></a></li>
+                        <li><a href="#">Another action</a></li>
+                        <li><a href="#">Something else here<p style="float: right">2</p></a></li>
+                        <li><a href="#">Separated link</a></li>
+                    </ul>
+                </li>
+                <li><a href="/">退出登录</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid">
+    <div class="col-md-2 sidebar">
+        <ul class="nav nav-sidebar">
+            <li><a href="javascript:void(0);" onclick="to_account()">▶ 我的账户</a></li>
+            <li><a href="javascript:void(0);" onclick="to_friend()">▶ 管理好友</a></li>
+            <li><a id="friends">▶ 我的好友</a></li>
+        </ul>
+        <div id="friend_nav" style="display:none;">
+            <div class="row">
+                <div class="col-md-9">pengsk</div><div class="col-md-3">删除</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-10 col-md-offset-2 main">
+        <div id="account">
+            <h1 class="page-header">我的账户   <small>Hello, <%= name %></small></h1>
+            <h2>修改密码</h2>
+            <div class="form-inline">
+                <input type="text" id="old_pwd" class="form-control" placeholder="原密码" required>
+                <input type="text" id="new_pwd" class="form-control" placeholder="新密码" required>
+                <button class="btn btn-default" type="button" onclick="change_pwd()">修改</button>
+            </div>
+            <br>
+            <h2>修改邮箱</h2>
+            <div class="form-inline">
+                <input type="text" id="new_mail" class="form-control" placeholder="新邮箱" required>
+                <button class="btn btn-default" type="button" onclick="change_mail()">修改</button>
+            </div>
+        </div>
+        <div id="friend" style="display:none;">
+            <h1 class="page-header">好友管理</h1>
+            <h2>添加分组</h2>
+            <div class="form-inline">
+                <input type="text" id="add_group" name="add_group" class="form-control" placeholder="分组名称" required>
+                <button class="btn btn-default" type="button" onclick="add_group()">添加</button>
+                <br>
+                <br>
+            </div>
+            <h2>添加好友</h2>
+            <div class="form-inline">
+                <input type="text" id="add_friend" name="add_friend" class="form-control" placeholder="好友名称" required>
+                <select id="add_friend_group" class="form-control" >
+                    <option value="aaa">asdada</option>
+                    <option value="aadaa">asdadasda</option>
+                </select>
+                <button class="btn btn-default" type="button" onclick="add_friend()">添加</button>
+            </div>
+            <br>
+            <br>
+            <h2>好友申请</h2>
+            <div>
+                <div class="form-inline">选择分组
+                    <select id="confirm_friend_group" class="form-control" >
+                        <option value="aaa">asdada</option>
+                        <option value="aadaa">asdadasda</option>
+                    </select>
+                </div>
+                <table id="friend_request" class="table">
+                    <th>名称</th><th></th><th></th>
+                    <tr><td>asdadada</td><td><a href="javascript:void(0);" onclick="confirm_friend('')">通过</a></td><td><a href="javascript:void(0);" onclick="reject_friend('')">拒绝</a></td></tr>
+                    <tr><td>asasdasdadadada</td><td>通过</td><td>拒绝</td></tr>
+                </table>
+                <br>
+            </div>
+            <h2>移动好友</h2>
+            <div class="form-inline">
+                <select id="move_friend_name" class="form-control" >
+                    <option value="aaa">asdada</option>
+                    <option value="aadaa">asdadasda</option>
+                </select>
+                <select id="move_friend_group" class="form-control" >
+                    <option value="aaa">asdada</option>
+                    <option value="aadaa">asdadasda</option>
+                </select>
+                <button class="btn btn-default" type="button" onclick="add_friend()">确定</button>
+            </div>
+            <br>
+            <br>
+        </div>
+        <div id="chat" style="display: none;">
+            <div style="background:#3d3d3d; height: 28px; font-size:12px; text-align: center">
+                <div style="line-height: 28px;color:#fff;">
+                    <span id="chat_name" style="text-align:center;">好友名称</span>
+                </div>
+            </div>
+            <div id="message" class="container col-md-12"></div>
+            <div style="position:fixed; bottom:0; width:75%">
+                <div style="width: 90%; float: left;"><input id="chat_input" type="text" class="form-control" style="width: 100%" placeholder="请输入内容"></div>
+                <div style="width: 10%; float: right"><button id="chat_ok" class="btn btn-default" type="button" style="width: 100%">发送</button></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="/js/jquery-1.11.2.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script type="text/javascript">
+    function getNowFormatDate() {
+        var date = new Date();
+        var seperator1 = "-";
+        var seperator2 = ":";
+        var month = date.getMonth() + 1;
+        var strDate = date.getDate();
+        if (month >= 1 && month <= 9) {
+            month = "0" + month;
+        }
+        if (strDate >= 0 && strDate <= 9) {
+            strDate = "0" + strDate;
+        }
+        var currentdate = date.getFullYear() + seperator1 + month + seperator1 + strDate
+                + " " + date.getHours() + seperator2 + date.getMinutes()
+                + seperator2 + date.getSeconds();
+        return currentdate;
+    }
+
+    var socket=io();
+    var n = '<%= name %>';
+    socket.emit('login', n);
+
+    socket.on('add_group', function(res){
+        if(res)
+            alert('添加分组成功');
+        else
+            alert('添加分组失败,可能已经存在');
+    });
+
+    socket.on('add_friend', function(res){
+        if(res)
+            alert('好友申请已发送');
+        else
+            alert('添加好友失败,已发送请求或用户名不存在');
+    });
+
+    socket.on('confirm_friend', function(res){
+        if(res)
+            alert('添加好友成功');
+        else
+            alert('添加好友失败');
+    });
+
+    socket.on('move_friend', function(res){
+        if(res)
+            alert('移动好友成功');
+        else
+            alert('移动好友失败');
+    });
+
+    socket.on('change_pwd', function(res){
+        if(res)
+            alert('修改密码成功');
+        else
+            alert('修改密码失败');
+    });
+
+    socket.on('change_mail', function(res){
+        if(res)
+            alert('修改邮箱成功');
+        else
+            alert('修改邮箱失败');
+    });
+
+    socket.on('update_group_list', function(data){
+        var html = '';
+        for(var i=0; i<data.length; i++){
+            html += '<option value=\"' + data[i].group_name + '\">' + data[i].group_name + '</option>';
+        }
+        document.getElementById('confirm_friend_group').innerHTML = html;
+        document.getElementById('add_friend_group').innerHTML = html;
+        document.getElementById('move_friend_group').innerHTML = html;
+    });
+
+    socket.on('update_friend_request', function(data){
+        var html = '<th>名称</th><th></th><th></th>';
+        for(var i=0; i<data.length; i++){
+            html += '<tr><td>' + data[i].friend_name + '</td><td><a href=\"javascript:void(0);\" onclick=\"confirm_friend(\'' + data[i].friend_name + '\')\">通过</a></td><td><a href=\"javascript:void(0);\" onclick=\"reject_friend(\'' + data[i].friend_name + '\')\">拒绝</a></td></tr>';
+        }
+        document.getElementById('friend_request').innerHTML = html;
+    });
+
+    socket.on('update_friend_list', function(data){
+        var html = '';
+        for(var i=0; i<data.length; i++){
+            html += '<option value=\"' + data[i].friend_name + '\">' + data[i].friend_name + '</option>';
+        }
+        document.getElementById('move_friend_name').innerHTML = html;
+    });
+
+    socket.on('update_friend_nav', function(data){
+        var html='';
+        for(var group_name in data) {
+            html+='<div class=\"row\"><div class=\"col-md-12\">● ' + group_name + '</div></div>';
+            for (var i = 0; i < data[group_name].length; i++) {
+                html+='<div class=\"row\"><div class=\"col-md-6 col-md-offset-2\"><a href=\"javascript:void(0);\" onclick=\"to_chat(\'' + data[group_name][i] + '\')\">' + data[group_name][i] + '</a></div><div class=\"col-md-4\"><a href=\"javascript:void(0);\" onclick=\"delete_friend(\'' + data[group_name][i] + '\')\">删除</a></div></div>';
+            }
+            html+='<br>';
+        }
+        document.getElementById('friend_nav').innerHTML = html;
+    });
+
+    socket.on('notice_update_msg', function(){
+        update_msg_notice();
+    });
+
+    socket.on('update_msg', function(data){
+        var html='';
+
+        for(var i=0; i<data.length; i++){
+            html+='<div class=\"row\"><div style=\"float: left;\">' + data[i].time + ' ' + data[i].friend_name + ':<br><div style=\"padding:5px; border:2px solid; border-radius:25px;\">' + data[i].msg + '</div></div></div>';
+        }
+        document.getElementById("message").innerHTML+=html;
+    });
+
+    socket.on('update_msg_notice', function(data){
+        var current_name = document.getElementById("chat_name").innerHTML;
+        var chat = document.getElementById("chat").style.display;
+        var html = '';
+        if(data.length == 0) document.getElementById("notice_name").innerHTML='消息通知';
+        else document.getElementById("notice_name").innerHTML='消息通知(新)';
+
+        for(var i=0; i<data.length; i++){
+            if(data[i].friend_name == current_name && chat == 'block') {
+                update_msg(data[i].friend_name);
+            }
+            else{
+                html += '<li><a href=\"javascript:void(0);\" onclick=\"to_chat(\'' + data[i].friend_name + '\')\">' + data[i].friend_name + '<p style=\"float: right\">' + data[i].num + '</p></a></li>';
+            }
+        }
+        document.getElementById("notice").innerHTML=html;
+    });
+
+    function add_group(){
+        var group_name = document.getElementById('add_group').value;
+        socket.emit('add_group', group_name);
+    }
+
+    function add_friend(){
+        var friend_name = document.getElementById('add_friend').value;
+        var group_name = document.getElementById('add_friend_group').value;
+        socket.emit('add_friend', {friend_name:friend_name, group_name:group_name});
+    }
+
+    function confirm_friend(friend_name){
+        var group_name = document.getElementById('confirm_friend_group').value;
+        socket.emit('confirm_friend', {friend_name:friend_name, group_name:group_name});
+    }
+
+    function move_friend(){
+        var friend_name = document.getElementById('move_friend_name').value;
+        var group_name = document.getElementById('move_friend_group').value;
+        socket.emit('move_friend', {friend_name:friend_name, group_name:group_name});
+    }
+
+    function delete_friend(friend_name){
+        socket.emit('delete_friend', friend_name);
+    }
+
+    function update_group_list(){
+        socket.emit('update_group_list');
+    }
+
+    function update_friend_request(){
+        socket.emit('update_friend_request');
+    }
+
+    function update_friend_list(){
+        socket.emit('update_friend_list');
+    }
+
+    function update_friend_nav(){
+        socket.emit('update_friend_nav');
+    }
+
+    function send_msg(friend_name){
+        var msg=document.getElementById('chat_input').value;
+        document.getElementById('chat_input').value='';
+        var html='<div class=\"row\"><div style=\"float: right;\">' + getNowFormatDate() + ' ' + n + ':<br><div style=\"padding:5px; border:2px solid; border-radius:25px;\">' + msg + '</div></div></div>';
+        document.getElementById("message").innerHTML+=html;
+        socket.emit('send_msg', {friend_name:friend_name, msg:msg});
+    }
+
+    function update_msg_notice(){
+        socket.emit('update_msg_notice');
+    }
+
+    function update_msg(friend_name){
+        socket.emit('update_msg', friend_name);
+    }
+
+    function change_pwd(){
+        var old_pwd = document.getElementById('old_pwd').value;
+        var new_pwd = document.getElementById('new_pwd').value;
+        socket.emit('change_pwd', {old_pwd:old_pwd, new_pwd:new_pwd});
+    }
+
+    function change_mail(){
+        var new_mail = document.getElementById('new_mail').value;
+        socket.emit('change_mail', new_mail);
+    }
+
+    update_group_list();
+    update_friend_request();
+    update_friend_list();
+    update_msg_notice();
+</script>
+<script src="/js/client.js"></script>
+</body>
+</html>
+
